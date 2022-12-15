@@ -65,6 +65,69 @@ app.get('/api/users', (req, res) => {
   });
 });
 
+let exerciseSchema = new mongoose.Schema({
+  username: {type: String, required: true},
+  description: {type: String, required: true},
+  duration: {type: Number, required: true},
+  date: {type: Date}
+});
+let Exercise = mongoose.model('Exercise', exerciseSchema);
+
+app.post('/api/users/:_id/exercises', (req, res, next) => {
+  const _id = req.params._id;
+  if (_id == "") {
+    console.log("empty _id")
+    return;
+  }
+  User.findById(_id, function(err, user) {
+    if (err) {
+      console.log("failed User.findById");
+      console.error(err);
+      return;
+    } else if (user == null) {
+      console.log("user does not exist")
+      return;
+    } else {
+      const username = user.username;
+      const description = req.body.description;
+      if (description == "") {
+        console.log("empty description");
+        return;
+      }
+      const duration = Number(req.body.duration);
+      if (isNaN(duration)) {
+        console.log("non-numeric (or empty) duration")
+        return;
+      }
+      let date = new Date();
+      if (req.body.date != "") {
+        date = new Date(req.body.date);
+      }
+      if (! date instanceof Date || isNaN(date)) {
+        console.log("invalid date");
+        return;
+      }
+      Exercise.create({username: username, description: description, duration: duration, date: date},
+        function(err, user) {
+          if (err) {
+            console.log("failed Exercise.create");
+            console.error(err);
+            return;
+          } else {
+            res.json({
+              username: username,
+              description: description,
+              duration: duration,
+              date: date.toDateString(),
+              _id: _id
+            });
+          }
+        }
+      );
+    }
+  })
+});
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
