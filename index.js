@@ -128,6 +128,47 @@ app.post('/api/users/:_id/exercises', (req, res, next) => {
   })
 });
 
+app.get('/api/users/:_id/logs', (req, res) => {
+  const _id = req.params._id;
+  if (_id == "") {
+    console.log("empty _id")
+    return;
+  }
+  User.findById(_id, function(err, user) {
+    if (err) {
+      console.log("failed User.findById");
+      console.error(err);
+      return;
+    } else if (user == null) {
+      console.log("user does not exist")
+      return;
+    } else {
+      const username = user.username;
+      Exercise.find({username: username}, function(err, exercises) {
+        if (err) {
+          console.log("failed Exercise.find");
+          console.error(err);
+          return;
+        } else {
+          const log = exercises.map((exercise) => {
+            return {
+              description: exercise.description,
+              duration: exercise.duration,
+              date: exercise.date.toDateString()
+            };
+          });
+          res.json({
+            username: username,
+            count: log.length,
+            _id: _id,
+            log: log
+          });
+        }
+      });
+    }
+  });
+});
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
