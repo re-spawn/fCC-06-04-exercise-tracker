@@ -15,7 +15,8 @@ app.use('/', bodyParser.urlencoded({extended: false}));
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env['MONGO_URI'], {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env['MONGO_URI'],
+  {useNewUrlParser: true, useUnifiedTopology: true});
 
 let userSchema = new mongoose.Schema({
   username: {type: String, required: true}
@@ -100,14 +101,18 @@ app.post('/api/users/:_id/exercises', (req, res, next) => {
         return;
       }
       let date = new Date();
-      if (req.body.date != "") {
+      if (req.body.date != undefined && req.body.date != "") {
         date = new Date(req.body.date);
       }
       if (! date instanceof Date || isNaN(date)) {
         console.log("invalid date");
         return;
       }
-      Exercise.create({username: username, description: description, duration: duration, date: date},
+      Exercise.create({
+	username: username,
+	description: description,
+	duration: duration,
+	date: date},
         function(err, user) {
           if (err) {
             console.log("failed Exercise.create");
