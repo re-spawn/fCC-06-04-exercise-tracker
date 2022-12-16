@@ -1,7 +1,7 @@
 {
-	"name": "fcc-exercise-tracker",
-	"version": "0.1.0",
-	"description": "A REST API project, part of Free Code Camp's curriculum",
+	"name": "fCC-06-04-exercise-tracker",
+	"version": "1.0.0",
+	"description": "A REST API project, part of freeCodeCamp's curriculum",
 	"main": "index.js",
 	"scripts": {
 		"start": "node index.js"
@@ -14,11 +14,12 @@
 		"mongoose": "^6.8.0"
 	},
 	"repository": {
-		"url": "https://github.com/freeCodeCamp/boilerplate-project-exercisetracker"
+		"url": "https://github.com/re-spawn/fCC-06-04-exercise-tracker"
 	},
 	"license": "MIT",
 	"keywords": [
 		"node",
-		"express"
+		"express",
+		"mongoose"
 	]
 }
