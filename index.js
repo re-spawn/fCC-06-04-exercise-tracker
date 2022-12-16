@@ -101,6 +101,10 @@ app.post('/api/users/:_id/exercises', (req, res, next) => {
         return;
       }
       let date = new Date();
+      date.setHours(0);
+      date.setMinutes(0);
+      date.setSeconds(0);
+      date.setMilliseconds(0);
       if (req.body.date != undefined && req.body.date != "") {
         date = new Date(req.body.date);
       }
@@ -149,7 +153,32 @@ app.get('/api/users/:_id/logs', (req, res) => {
       return;
     } else {
       const username = user.username;
-      Exercise.find({username: username}, function(err, exercises) {
+      const query = Exercise.find({username: username});
+      if (req.query.from != undefined && req.query.from != "") {
+        const from = new Date(req.query.from);
+	if (! from instanceof Date || isNaN(from)) {
+	  console.log("invalid from date");
+	  return;
+	}
+	query.where("date").gte(from);
+      }
+      if (req.query.to != undefined && req.query.to != "") {
+        const to = new Date(req.query.to);
+	if (! to instanceof Date || isNaN(to)) {
+	  console.log("invalid to date");
+	  return;
+	}
+	query.where("date").lte(to);
+      }
+      if (req.query.limit != undefined && req.query.limit != "") {
+        const limit = Number(req.query.limit);
+        if (isNaN(limit)) {
+          console.log("non-numeric (or empty) limit")
+          return;
+        }
+	query.limit(limit);
+      }
+      query.exec(function(err, exercises) {
         if (err) {
           console.log("failed Exercise.find");
           console.error(err);
